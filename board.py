@@ -867,3 +867,17 @@ class Board:
             return BlackScore-WhiteScore
     
     ####################################################################
+
+    def get_board_state(self):
+        piece_dict = {
+            'PION': {'blanc': 1, 'noir': 7},
+            'CAVALIER': {'blanc': 2, 'noir': 8},
+            'FOU': {'blanc': 3, 'noir': 9},
+            'TOUR': {'blanc': 4, 'noir': 10},
+            'DAME': {'blanc': 5, 'noir': 11},
+            'ROI': {'blanc': 6, 'noir': 12},
+            '.': {'': 0}
+        }
+        # Convertir chaque pièce en un identifiant unique
+        state = [piece_dict[piece.nom][piece.couleur] for piece in self.cases]
+        return state

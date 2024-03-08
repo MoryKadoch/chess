@@ -25,59 +25,82 @@ class Engine:
         self.init()
 
     ####################################################################
-    
-    def usermove(self,b,c):
-        
-        """Move a piece for the side to move, asked in command line.
-        The command 'c' in argument is like 'e2e4' or 'b7b8q'.
+
+    def usermove(self, b, action):
+        """Move a piece for the side to move.
+        The action 'action' in argument is an integer between 0 and 4095.
         Argument 'b' is the chessboard.
         """
         
-        if(self.endgame):
-            self.print_result(b)
-            return        
+        # Convert the action to a chess move
+        c = self.action_to_move(action)
+
+    def action_to_move(self, action):
+        """Convert an action (an integer between 0 and 4095) to a chess move."""
+        
+        # Convert the action to a string of 4 or 5 characters
+        c = format(action, '04x')
+        
+        # Convert the string to a chess move
+        move = chr(ord('a') + int(c[0], 16)) + str(int(c[1], 16) + 1)
+        move += chr(ord('a') + int(c[2], 16)) + str(int(c[3], 16) + 1)
+        if len(c) > 4:
+            move += chr(ord('a') + int(c[4], 16))
+        
+        return move
+    
+    # def usermove(self,b,c):
+        
+    #     """Move a piece for the side to move, asked in command line.
+    #     The command 'c' in argument is like 'e2e4' or 'b7b8q'.
+    #     Argument 'b' is the chessboard.
+    #     """
+        
+    #     if(self.endgame):
+    #         self.print_result(b)
+    #         return        
               
-        # Testing the command 'c'. Exit if incorrect.
-        chk=self.chkCmd(c)
-        if(chk!=''):
-            print(chk)
-            return
+    #     # Testing the command 'c'. Exit if incorrect.
+    #     chk=self.chkCmd(c)
+    #     if(chk!=''):
+    #         print(chk)
+    #         return
             
-        # Convert cases names to int, ex : e3 -> 44
-        pos1=b.caseStr2Int(c[0]+c[1])
-        pos2=b.caseStr2Int(c[2]+c[3])
+    #     # Convert cases names to int, ex : e3 -> 44
+    #     pos1=b.caseStr2Int(c[0]+c[1])
+    #     pos2=b.caseStr2Int(c[2]+c[3])
         
-        # Promotion asked ?
-        promote=''
-        if(len(c)>4):
-            promote=c[4]
-            if(promote=='q'):
-                promote='q'
-            elif(promote=='r'):
-                promote='r'
-            elif(promote=='n'):
-                promote='n'
-            elif(promote=='b'):
-                promote='b'
+    #     # Promotion asked ?
+    #     promote=''
+    #     if(len(c)>4):
+    #         promote=c[4]
+    #         if(promote=='q'):
+    #             promote='q'
+    #         elif(promote=='r'):
+    #             promote='r'
+    #         elif(promote=='n'):
+    #             promote='n'
+    #         elif(promote=='b'):
+    #             promote='b'
             
-        # Generate moves list to check 
-        # if the given move (pos1,pos2,promote) is correct
-        mList=b.gen_moves_list()
+    #     # Generate moves list to check 
+    #     # if the given move (pos1,pos2,promote) is correct
+    #     mList=b.gen_moves_list()
         
-        # The move is not in list ? or let the king in check ?
-        if(((pos1,pos2,promote) not in mList) or \
-        (b.domove(pos1,pos2,promote)==False)):
-            print("\n"+c+' : incorrect move or let king in check'+"\n")
-            return
+    #     # The move is not in list ? or let the king in check ?
+    #     if(((pos1,pos2,promote) not in mList) or \
+    #     (b.domove(pos1,pos2,promote)==False)):
+    #         print("\n"+c+' : incorrect move or let king in check'+"\n")
+    #         return
         
-        # Display the chess board
-        b.render()
+    #     # Display the chess board
+    #     b.render()
         
-        # Check if game is over
-        self.print_result(b)
+    #     # Check if game is over
+    #     self.print_result(b)
         
-        # Let the engine play
-        #self.search(b)
+    #     # Let the engine play
+    #     #self.search(b)
         
     ####################################################################
 
@@ -385,6 +408,7 @@ class Engine:
             if(not b.domove(m[0],m[1],m[2])):
                 continue            
             print('move #',cpt,':',b.caseInt2Str(m[0])+b.caseInt2Str(m[1])+m[2])
+            print(f"raw:{m[0], m[1], m[2]}")
             b.undomove()
             cpt+=1
             
